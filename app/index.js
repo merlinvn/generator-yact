@@ -26,27 +26,46 @@ var MyGenerator = (function (_super) {
         this.log("default");
     };
     MyGenerator.prototype.writing = function () {
-        var _this = this;
         var self = this;
-        var gulpFiles = function () {
-            self.log(_this.templatePath());
-            self.copy("gulpfile.js", "gulpfile.js");
+        var gulpfile = function () {
+            self.fs.copy(self.templatePath("gulpfile.js"), self.destinationPath("gulpfile.js"));
         };
-        gulpFiles();
+        var packageJson = function () {
+            self.fs.copyTpl(self.templatePath("_package.json"), self.destinationPath("package.json"), {
+                appname: "testapp"
+            });
+        };
+        var git = function () {
+            self.fs.copy(self.templatePath(".gitignore"), self.destinationPath(".gitignore"));
+        };
+        var cmakefile = function () {
+            self.fs.copyTpl(self.templatePath("_CMakeLists.txt"), self.destinationPath("CMakeLists.txt"), {
+                appname: "testapp"
+            });
+        };
+        var ext_libs = function () {
+            self.fs.copy(self.templatePath("ext/gtest/CMakeLists.txt"), self.destinationPath("ext/gtest/CMakeLists.txt"));
+        };
+        var src = function () {
+            self.fs.copy(self.templatePath("src/CMakeLists.txt"), self.destinationPath("src/CMakeLists.txt"));
+            self.fs.copy(self.templatePath("src/main.cpp"), self.destinationPath("src/main.cpp"));
+        };
+        var test = function () {
+            self.fs.copy(self.templatePath("test/CMakeLists.txt"), self.destinationPath("test/CMakeLists.txt"));
+            self.fs.copy(self.templatePath("test/sample_test.cpp"), self.destinationPath("test/sample_test.cpp"));
+        };
+        gulpfile();
+        packageJson();
+        git();
+        cmakefile();
+        ext_libs();
+        src();
     };
-    //  {
-    //      ():void {
-    //         this.log("Template path: " + this.templatePath());
-    //     }
-    // }
     MyGenerator.prototype.conflicts = function () {
         this.log("conflicts");
     };
     MyGenerator.prototype.install = function () {
         this.log("install");
-    };
-    MyGenerator.prototype.sayHello = function () {
-        this.log("Hello World");
     };
     return MyGenerator;
 }(yo.Base));

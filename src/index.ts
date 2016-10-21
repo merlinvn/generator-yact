@@ -26,32 +26,85 @@ class MyGenerator extends yo.Base {
 
     writing() {
         var self = this;
-        var gulpFiles = () => {
-            self.log(this.templatePath());
-            self.copy("gulpfile.js", "gulpfile.js");
+        var gulpfile = () => {
+            self.fs.copy(
+                self.templatePath("gulpfile.js"),
+                self.destinationPath("gulpfile.js")
+            );
         };
 
-        gulpFiles();
+        var packageJson = () => {
+            self.fs.copyTpl(
+                self.templatePath("_package.json"),
+                self.destinationPath("package.json"),
+                {
+                    appname: "testapp"
+                }
+            );
+        };
+
+        var git = () => {
+            self.fs.copy(
+                self.templatePath(".gitignore"),
+                self.destinationPath(".gitignore")
+            );
+        };
+        var cmakefile = () => {
+            self.fs.copyTpl(
+                self.templatePath("_CMakeLists.txt"),
+                self.destinationPath("CMakeLists.txt"),
+                {
+                    appname: "testapp"
+                }
+            );
+        };
+
+        var ext_libs = () => {
+            self.fs.copy(
+                self.templatePath("ext/gtest/CMakeLists.txt"),
+                self.destinationPath("ext/gtest/CMakeLists.txt")
+            );
+        };
+
+        var src = () => {
+            self.fs.copy(
+                self.templatePath("src/CMakeLists.txt"),
+                self.destinationPath("src/CMakeLists.txt")
+            );
+            self.fs.copy(
+                self.templatePath("src/main.cpp"),
+                self.destinationPath("src/main.cpp")
+            );
+        }
+        
+        var test = () => {
+             self.fs.copy(
+                self.templatePath("test/CMakeLists.txt"),
+                self.destinationPath("test/CMakeLists.txt")
+            );
+            self.fs.copy(
+                self.templatePath("test/sample_test.cpp"),
+                self.destinationPath("test/sample_test.cpp")
+            );
+        }
+
+        gulpfile();
+        packageJson();
+        git();
+        cmakefile();
+        ext_libs();
+        src();
+
+
 
     }
 
 
-    //  {
-    //      ():void {
-    //         this.log("Template path: " + this.templatePath());
-    //     }
-
-    // }
     conflicts() {
         this.log("conflicts");
     }
     install() {
         this.log("install");
-    }
-
-
-    sayHello() {
-        this.log("Hello World");
     }
 }
 
