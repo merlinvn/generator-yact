@@ -67,9 +67,12 @@ class MyGenerator extends yo.Base {
         };
 
         var src = () => {
-            self.fs.copy(
-                self.templatePath("src/CMakeLists.txt"),
-                self.destinationPath("src/CMakeLists.txt")
+            self.fs.copyTpl(
+                self.templatePath("src/_CMakeLists.txt"),
+                self.destinationPath("src/CMakeLists.txt"),
+                {
+                    appname: "testapp"
+                }
             );
             self.fs.copy(
                 self.templatePath("src/main.cpp"),
@@ -94,7 +97,7 @@ class MyGenerator extends yo.Base {
         cmakefile();
         ext_libs();
         src();
-
+        test();
 
 
     }

@@ -47,7 +47,9 @@ var MyGenerator = (function (_super) {
             self.fs.copy(self.templatePath("ext/gtest/CMakeLists.txt"), self.destinationPath("ext/gtest/CMakeLists.txt"));
         };
         var src = function () {
-            self.fs.copy(self.templatePath("src/CMakeLists.txt"), self.destinationPath("src/CMakeLists.txt"));
+            self.fs.copyTpl(self.templatePath("src/_CMakeLists.txt"), self.destinationPath("src/CMakeLists.txt"), {
+                appname: "testapp"
+            });
             self.fs.copy(self.templatePath("src/main.cpp"), self.destinationPath("src/main.cpp"));
         };
         var test = function () {
@@ -60,6 +62,7 @@ var MyGenerator = (function (_super) {
         cmakefile();
         ext_libs();
         src();
+        test();
     };
     MyGenerator.prototype.conflicts = function () {
         this.log("conflicts");
