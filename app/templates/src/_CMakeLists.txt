@@ -1,6 +1,6 @@
 
 add_executable(<%= appname %> main.cpp)
 
-target_link_libraries(<%= appname %> mpi)
+target_link_libraries(<%= appname %> <% if (applicationType==="MPI") {%>mpi<% } %>)
 
 target_compile_features(<%= appname %> PRIVATE cxx_range_for)
