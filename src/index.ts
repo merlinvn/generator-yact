@@ -1,5 +1,9 @@
-'use strict';
-import yo = require('yeoman-generator');
+"use strict";
+import yo = require("yeoman-generator");
+import _ = require("lodash");
+import chalk = require("chalk");
+import yosay = require("yosay");
+import path = require("path");
 
 class MyGenerator extends yo.Base {
     /**
@@ -8,6 +12,9 @@ class MyGenerator extends yo.Base {
     constructor(args: string | string[], options: any) {
         super(args, options);
 
+        // this.argument("appname", { type: String, required: true, desc: "" });
+        // this.appname = _.snakeCase(this.appname);
+        // this.log("appname (arg): " + this.appname);
     }
 
     initializing() {
@@ -15,7 +22,19 @@ class MyGenerator extends yo.Base {
     }
 
     prompting() {
-        this.log("prompting");
+        var self = this;
+        this.log(yosay("Welcome to " + chalk.yellow("YACT (Yet Another C++ Template)") + " generator"));
+
+        var done = this.async();
+        return this.prompt({
+            type: 'input',
+            name: 'appname',
+            message: 'C++ App Name',
+            default: process.cwd().split(path.sep).pop()
+        }).then(function (answer) {
+            self.appname = answer.appname;  
+            done();
+        }.bind(this));
     }
     configuring() {
         this.log("configuring");
@@ -38,7 +57,7 @@ class MyGenerator extends yo.Base {
                 self.templatePath("_package.json"),
                 self.destinationPath("package.json"),
                 {
-                    appname: "testapp"
+                    appname: self.appname
                 }
             );
         };
@@ -54,7 +73,7 @@ class MyGenerator extends yo.Base {
                 self.templatePath("_CMakeLists.txt"),
                 self.destinationPath("CMakeLists.txt"),
                 {
-                    appname: "testapp"
+                    appname: self.appname
                 }
             );
         };
@@ -71,17 +90,17 @@ class MyGenerator extends yo.Base {
                 self.templatePath("src/_CMakeLists.txt"),
                 self.destinationPath("src/CMakeLists.txt"),
                 {
-                    appname: "testapp"
+                    appname: _.snakeCase(self.appname)
                 }
             );
             self.fs.copy(
-                self.templatePath("src/main.cpp"),
+                self.templatePath("src/main_mpi.cpp"),
                 self.destinationPath("src/main.cpp")
             );
         }
-        
+
         var test = () => {
-             self.fs.copy(
+            self.fs.copy(
                 self.templatePath("test/CMakeLists.txt"),
                 self.destinationPath("test/CMakeLists.txt")
             );
