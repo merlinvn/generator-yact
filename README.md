@@ -2,6 +2,10 @@
 
 >[Yeoman](http://yeoman.io) Generator that scaffolds out a cpp app using [gulp](http://gulpjs.com/) and [cmake](https://cmake.org/) for the build process
 
+## Changelog
+
+- 24/10/2016: Yact can include yaml-cpp, boost, gsl libraries to new project
+
 ## Features
 
 * Automatically build and test with `gulp watch`
