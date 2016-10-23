@@ -16,7 +16,7 @@
     * `sudo apt-get install cmake` 
     * `sudo apt-get install openmpi-bin` 
     * `sudo apt-get install libopenmpi-dev` 
-    * `sudo apt-get install libgsl0-dev`
+    * `sudo apt-get install libgsl-dev`
     * `sudo apt-get install libboost-all-dev` 
     
 - Run `yo yact` to scaffold your cpp app

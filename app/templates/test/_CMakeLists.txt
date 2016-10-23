@@ -1,0 +1,17 @@
+include_directories(${GTEST_INCLUDE_DIRS})
+
+file(GLOB TEST_SRC_FILES *.cpp)
+add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
+
+add_dependencies(${PROJECT_TEST_NAME} googletest)
+
+target_link_libraries(${PROJECT_TEST_NAME}
+    ${GTEST_LIBS_DIR}/libgtest.a
+    ${GTEST_LIBS_DIR}/libgtest_main.a
+    pthread
+    <% if (includeGsl) {%>${GSL_LIBRARIES}<% } %>
+    <% if (includeBoost) {%>${Boost_LIBRARIES} <% } %>
+    <% if (includeYamlCpp) {%> ${YAML_CPP_LIBS_DIR}/libyaml-cpp.a<% } %>
+)
+
+target_compile_features(${PROJECT_TEST_NAME} PRIVATE cxx_range_for)

@@ -1,6 +1,13 @@
 
-add_executable(<%= appname %> main.cpp)
+file(GLOB SRC_FILES *.cpp)
 
-target_link_libraries(<%= appname %> <% if (applicationType==="MPI") {%>mpi<% } %>)
+add_executable(<%= appname %> ${SRC_FILES})
+
+target_link_libraries(<%= appname %> 
+    <% if (applicationType==="MPI") {%>mpi<% } %>
+    <% if (includeGsl) {%>${GSL_LIBRARIES}<% } %>
+    <% if (includeBoost) {%>${Boost_LIBRARIES} <% } %>
+    <% if (includeYamlCpp) {%> ${YAML_CPP_LIBS_DIR}/libyaml-cpp.a<% } %>
+)
 
 target_compile_features(<%= appname %> PRIVATE cxx_range_for)

@@ -111,16 +111,25 @@ var MyGenerator = (function (_super) {
             self.fs.copyTpl(self.templatePath("_CMakeLists.txt"), self.destinationPath("CMakeLists.txt"), {
                 applicationType: self.applicationType,
                 appname: self.appname,
-                testAppname: self.testAppname
+                testAppname: self.testAppname,
+                includeGsl: self.includeGsl,
+                includeBoost: self.includeBoost,
+                includeYamlCpp: self.includeYamlCpp
             });
         };
         var ext_libs = function () {
             self.fs.copy(self.templatePath("ext/gtest/CMakeLists.txt"), self.destinationPath("ext/gtest/CMakeLists.txt"));
+            if (self.includeYamlCpp) {
+                self.fs.copy(self.templatePath("ext/yaml-cpp/CMakeLists.txt"), self.destinationPath("ext/yaml-cpp/CMakeLists.txt"));
+            }
         };
         var src = function () {
             self.fs.copyTpl(self.templatePath("src/_CMakeLists.txt"), self.destinationPath("src/CMakeLists.txt"), {
                 applicationType: self.applicationType,
-                appname: _.snakeCase(self.appname)
+                appname: _.snakeCase(self.appname),
+                includeGsl: self.includeGsl,
+                includeBoost: self.includeBoost,
+                includeYamlCpp: self.includeYamlCpp
             });
             if (self.applicationType === "SA") {
                 self.fs.copy(self.templatePath("src/main.cpp"), self.destinationPath("src/main.cpp"));
@@ -130,8 +139,18 @@ var MyGenerator = (function (_super) {
             }
         };
         var test = function () {
-            self.fs.copy(self.templatePath("test/CMakeLists.txt"), self.destinationPath("test/CMakeLists.txt"));
+            self.fs.copyTpl(self.templatePath("test/_CMakeLists.txt"), self.destinationPath("test/CMakeLists.txt"), {
+                includeGsl: self.includeGsl,
+                includeBoost: self.includeBoost,
+                includeYamlCpp: self.includeYamlCpp
+            });
             self.fs.copy(self.templatePath("test/sample_test.cpp"), self.destinationPath("test/sample_test.cpp"));
+            if (self.includeGsl) {
+                self.fs.copy(self.templatePath("test/test_gsl.cpp"), self.destinationPath("test/test_gsl.cpp"));
+            }
+            if (self.includeYamlCpp) {
+                self.fs.copy(self.templatePath("test/test_yaml_cpp.cpp"), self.destinationPath("test/test_yaml_cpp.cpp"));
+            }
         };
         gulpfile();
         packageJson();
