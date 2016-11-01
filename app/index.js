@@ -53,6 +53,21 @@ var MyGenerator = (function (_super) {
                 ]
             },
             {
+                type: "list",
+                name: "unitTestType",
+                message: "Select unit test framework type:",
+                choices: [
+                    {
+                        name: "Google Test",
+                        value: "gtest"
+                    },
+                    {
+                        name: "CATCH (C++ Automated Test Cases in Headers)",
+                        value: "catch"
+                    }
+                ]
+            },
+            {
                 type: "checkbox",
                 name: "includeLibs",
                 message: "Which C++ libraries would you like to include?",
@@ -78,6 +93,7 @@ var MyGenerator = (function (_super) {
             self.appname = answer.appname;
             self.testAppname = answer.testAppname;
             self.applicationType = answer.applicationType;
+            self.unitTestType = answer.unitTestType;
             self.includeBoost = _.includes(answer.includeLibs, "boost");
             self.includeGsl = _.includes(answer.includeLibs, "gsl");
             self.includeYamlCpp = _.includes(answer.includeLibs, "yaml-cpp");
@@ -110,6 +126,7 @@ var MyGenerator = (function (_super) {
         var cmakefile = function () {
             self.fs.copyTpl(self.templatePath("_CMakeLists.txt"), self.destinationPath("CMakeLists.txt"), {
                 applicationType: self.applicationType,
+                unitTestType: self.unitTestType,
                 appname: self.appname,
                 testAppname: self.testAppname,
                 includeGsl: self.includeGsl,
@@ -118,7 +135,12 @@ var MyGenerator = (function (_super) {
             });
         };
         var ext_libs = function () {
-            self.fs.copy(self.templatePath("ext/gtest/CMakeLists.txt"), self.destinationPath("ext/gtest/CMakeLists.txt"));
+            if (self.unitTestType === "gtest") {
+                self.fs.copy(self.templatePath("ext/gtest/CMakeLists.txt"), self.destinationPath("ext/gtest/CMakeLists.txt"));
+            }
+            else if (self.unitTestType === "catch") {
+                self.fs.copy(self.templatePath("ext/catch/CMakeLists.txt"), self.destinationPath("ext/catch/CMakeLists.txt"));
+            }
             if (self.includeYamlCpp) {
                 self.fs.copy(self.templatePath("ext/yaml-cpp/CMakeLists.txt"), self.destinationPath("ext/yaml-cpp/CMakeLists.txt"));
             }
@@ -140,16 +162,26 @@ var MyGenerator = (function (_super) {
         };
         var test = function () {
             self.fs.copyTpl(self.templatePath("test/_CMakeLists.txt"), self.destinationPath("test/CMakeLists.txt"), {
+                unitTestType: self.unitTestType,
                 includeGsl: self.includeGsl,
                 includeBoost: self.includeBoost,
                 includeYamlCpp: self.includeYamlCpp
             });
-            self.fs.copy(self.templatePath("test/sample_test.cpp"), self.destinationPath("test/sample_test.cpp"));
+            if (self.unitTestType === "catch") {
+                self.fs.copy(self.templatePath("test/main_catch.cpp"), self.destinationPath("test/main_catch.cpp"));
+            }
+            self.fs.copyTpl(self.templatePath("test/_sample_test.cpp"), self.destinationPath("test/sample_test.cpp"), {
+                unitTestType: self.unitTestType
+            });
             if (self.includeGsl) {
-                self.fs.copy(self.templatePath("test/test_gsl.cpp"), self.destinationPath("test/test_gsl.cpp"));
+                self.fs.copyTpl(self.templatePath("test/_sample_gsl_test.cpp"), self.destinationPath("test/sample_gsl_test.cpp"), {
+                    unitTestType: self.unitTestType
+                });
             }
             if (self.includeYamlCpp) {
-                self.fs.copy(self.templatePath("test/test_yaml_cpp.cpp"), self.destinationPath("test/test_yaml_cpp.cpp"));
+                self.fs.copyTpl(self.templatePath("test/_sample_yaml_cpp_test.cpp"), self.destinationPath("test/sample_yaml_cpp_test.cpp"), {
+                    unitTestType: self.unitTestType
+                });
             }
         };
         gulpfile();

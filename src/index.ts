@@ -10,6 +10,7 @@ class MyGenerator extends yo.Base {
      *
      */
     applicationType: string;
+    unitTestType: string;
     includeBoost: boolean;
     includeGsl: boolean;
     includeYamlCpp: boolean;
@@ -61,6 +62,21 @@ class MyGenerator extends yo.Base {
                 ]
             },
             {
+                type: "list",
+                name: "unitTestType",
+                message: "Select unit test framework type:",
+                choices: [
+                    {
+                        name: "Google Test",
+                        value: "gtest"
+                    },
+                    {
+                        name: "CATCH (C++ Automated Test Cases in Headers)",
+                        value: "catch"
+                    }
+                ]
+            },
+            {
                 type: "checkbox",
                 name: "includeLibs",
                 message: "Which C++ libraries would you like to include?",
@@ -86,6 +102,7 @@ class MyGenerator extends yo.Base {
             self.appname = answer.appname;
             self.testAppname = answer.testAppname;
             self.applicationType = answer.applicationType;
+            self.unitTestType = answer.unitTestType;
 
             self.includeBoost = _.includes(answer.includeLibs, "boost");
             self.includeGsl = _.includes(answer.includeLibs, "gsl");
@@ -137,6 +154,7 @@ class MyGenerator extends yo.Base {
                 self.destinationPath("CMakeLists.txt"),
                 {
                     applicationType: self.applicationType,
+                    unitTestType: self.unitTestType,
                     appname: self.appname,
                     testAppname: self.testAppname,
                     includeGsl: self.includeGsl,
@@ -147,10 +165,18 @@ class MyGenerator extends yo.Base {
         };
 
         var ext_libs = () => {
-            self.fs.copy(
-                self.templatePath("ext/gtest/CMakeLists.txt"),
-                self.destinationPath("ext/gtest/CMakeLists.txt")
-            );
+            if (self.unitTestType === "gtest") {
+                self.fs.copy(
+                    self.templatePath("ext/gtest/CMakeLists.txt"),
+                    self.destinationPath("ext/gtest/CMakeLists.txt")
+                );
+            } else if (self.unitTestType === "catch") {
+                self.fs.copy(
+                    self.templatePath("ext/catch/CMakeLists.txt"),
+                    self.destinationPath("ext/catch/CMakeLists.txt")
+                );
+            }
+
             if (self.includeYamlCpp) {
                 self.fs.copy(
                     self.templatePath("ext/yaml-cpp/CMakeLists.txt"),
@@ -191,26 +217,44 @@ class MyGenerator extends yo.Base {
                 self.templatePath("test/_CMakeLists.txt"),
                 self.destinationPath("test/CMakeLists.txt"),
                 {
+                    unitTestType: self.unitTestType,
                     includeGsl: self.includeGsl,
                     includeBoost: self.includeBoost,
                     includeYamlCpp: self.includeYamlCpp
                 }
             );
-            self.fs.copy(
-                self.templatePath("test/sample_test.cpp"),
-                self.destinationPath("test/sample_test.cpp")
-            );
-            if (self.includeGsl) {
+            if (self.unitTestType === "catch") {
                 self.fs.copy(
-                    self.templatePath("test/test_gsl.cpp"),
-                    self.destinationPath("test/test_gsl.cpp")
+                    self.templatePath("test/main_catch.cpp"),
+                    self.destinationPath("test/main_catch.cpp")
+                );
+            }
+
+            self.fs.copyTpl(
+                self.templatePath("test/_sample_test.cpp"),
+                self.destinationPath("test/sample_test.cpp"),
+                {
+                    unitTestType: self.unitTestType
+                }
+            );
+
+            if (self.includeGsl) {
+                self.fs.copyTpl(
+                    self.templatePath("test/_sample_gsl_test.cpp"),
+                    self.destinationPath("test/sample_gsl_test.cpp"),
+                    {
+                        unitTestType: self.unitTestType
+                    }
                 );
             }
 
             if (self.includeYamlCpp) {
-                self.fs.copy(
-                    self.templatePath("test/test_yaml_cpp.cpp"),
-                    self.destinationPath("test/test_yaml_cpp.cpp")
+                self.fs.copyTpl(
+                    self.templatePath("test/_sample_yaml_cpp_test.cpp"),
+                    self.destinationPath("test/sample_yaml_cpp_test.cpp"),
+                    {
+                        unitTestType: self.unitTestType
+                    }
                 );
             }
         }
@@ -232,5 +276,6 @@ class MyGenerator extends yo.Base {
         this.log("install");
     }
 }
+
 
 export = MyGenerator; 

@@ -1,6 +1,6 @@
 {
   "name": "generator-yact",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Yeoman Generator that scaffolds out a cpp app using gulp and cmake for the build process",
   "author": "MerlinVN",
   "license": "BSD",

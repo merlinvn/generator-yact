@@ -4,6 +4,7 @@
 
 ## Changelog
 
+- 01/11/2016: add options to select [Catch](https://github.com/philsquared/Catch) or [googletest](https://github.com/google/googletest)
 - 24/10/2016: Yact can include yaml-cpp, boost, gsl libraries to new project
 
 ## Features

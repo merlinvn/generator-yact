@@ -1,33 +1,36 @@
 cmake_minimum_required(VERSION 3.2)
 project (<%= appname %>)
-
 set(EXT_PROJECTS_DIR ${PROJECT_SOURCE_DIR}/ext)
-add_subdirectory(${EXT_PROJECTS_DIR}/gtest)
 
+<% if (unitTestType==="gtest"){%>
+#includes Gtest
+add_subdirectory(${EXT_PROJECTS_DIR}/gtest)
+<%} else if(unitTestType==="catch"){%>
+# Includes Catch
+add_subdirectory(${EXT_PROJECTS_DIR}/catch)
+<% } %>
+#${COMMON_INCLUDES}
+#include dependent libs
 <% if (includeYamlCpp) {%>
 add_subdirectory(${EXT_PROJECTS_DIR}/yaml-cpp)
 include_directories(${YAML_CPP_INCLUDE_DIRS})
 <% } %>
-
 <% if (applicationType === "MPI") {%>
 SET(CMAKE_C_COMPILER mpicc)
 SET(CMAKE_CXX_COMPILER mpicxx)
 <% } %>
-
 <% if (includeGsl) {%>
 find_package(GSL REQUIRED)
 if(GSL_FOUND)
     include_directories(${GSL_INCLUDE_DIRS}) 
 endif()
 <% } %>
-
 <% if (includeBoost) {%>
 find_package(Boost REQUIRED)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS}) 
 endif()
 <% } %>
-
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -42,7 +45,7 @@ set(PROJECT_TEST_NAME <%= testAppname %>)
 add_subdirectory(test)
 
 enable_testing()
-add_test(test1 ${CMAKE_BINARY_DIR}/bin/${PROJECT_TEST_NAME} --gtest_color=yes)
+add_test(test1 ${CMAKE_BINARY_DIR}/bin/${PROJECT_TEST_NAME} <% if (unitTestType==="gtest"){%>--gtest_color=yes<% } if (unitTestType==="catch"){%> --force-colour <% } %>)
 
 
 add_custom_target(run
