@@ -113,7 +113,10 @@ var MyGenerator = (function (_super) {
     MyGenerator.prototype.writing = function () {
         var self = this;
         var gulpfile = function () {
-            self.fs.copy(self.templatePath("gulpfile.js"), self.destinationPath("gulpfile.js"));
+            self.fs.copyTpl(self.templatePath("_gulpfile.js"), self.destinationPath("gulpfile.js"), {
+                appname: _.snakeCase(self.appname),
+                testAppname: self.testAppname
+            });
         };
         var packageJson = function () {
             self.fs.copyTpl(self.templatePath("_package.json"), self.destinationPath("package.json"), {
@@ -127,7 +130,7 @@ var MyGenerator = (function (_super) {
             self.fs.copyTpl(self.templatePath("_CMakeLists.txt"), self.destinationPath("CMakeLists.txt"), {
                 applicationType: self.applicationType,
                 unitTestType: self.unitTestType,
-                appname: self.appname,
+                appname: _.snakeCase(self.appname),
                 testAppname: self.testAppname,
                 includeGsl: self.includeGsl,
                 includeBoost: self.includeBoost,
@@ -201,3 +204,4 @@ var MyGenerator = (function (_super) {
     return MyGenerator;
 }(yo.Base));
 module.exports = MyGenerator;
+//# sourceMappingURL=index.js.map

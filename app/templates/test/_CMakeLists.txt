@@ -7,7 +7,9 @@ include_directories(${CATCH_INCLUDE_DIR})
 file(GLOB TEST_SRC_FILES *.cpp)
 add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES})
 
-<% if (unitTestType==="gtest"){%>add_dependencies(${PROJECT_TEST_NAME} googletest)<%} %>
+#<% if (unitTestType==="gtest"){%>add_dependencies(${PROJECT_TEST_NAME} googletest)<%} %>
+#<% if (unitTestType==="catch"){%>add_dependencies(${PROJECT_TEST_NAME} catch)<%} %>
+#<% if (includeYamlCpp) {%>  {%>add_dependencies(${PROJECT_TEST_NAME} yaml_cpp) <% } %>
 
 target_link_libraries(${PROJECT_TEST_NAME}
 <% if (unitTestType==="gtest"){%>

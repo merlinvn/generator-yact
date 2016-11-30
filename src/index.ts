@@ -126,9 +126,13 @@ class MyGenerator extends yo.Base {
     writing() {
         var self = this;
         var gulpfile = () => {
-            self.fs.copy(
-                self.templatePath("gulpfile.js"),
-                self.destinationPath("gulpfile.js")
+            self.fs.copyTpl(
+                self.templatePath("_gulpfile.js"),
+                self.destinationPath("gulpfile.js"),
+                {
+                    appname: _.snakeCase(self.appname),
+                    testAppname: self.testAppname
+                }
             );
         };
 
@@ -155,7 +159,7 @@ class MyGenerator extends yo.Base {
                 {
                     applicationType: self.applicationType,
                     unitTestType: self.unitTestType,
-                    appname: self.appname,
+                    appname: _.snakeCase(self.appname),
                     testAppname: self.testAppname,
                     includeGsl: self.includeGsl,
                     includeBoost: self.includeBoost,
